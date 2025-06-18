@@ -65,29 +65,39 @@ def set_custom_style(image_file):
         font-weight: bold;
         border-radius: 8px;
     }}
+    .hero-container {{
+        background: white;  /* solid white for the intro area only */
+        padding: 2rem;
+        border-radius: 12px;
+        margin: 2rem auto;
+        max-width: 900px;
+        color: black;  /* text inside is black */
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
+        animation: fadeIn 1.5s ease-in-out;
+}}
+
     </style>
     """
     st.markdown(custom_css, unsafe_allow_html=True)
 # --- Streamlit app setup ---
 
-# Apply the new style
-set_custom_style("backk.jpg")
+# === Apply styles ===
+set_custom_style("YOUR_IMAGE.jpg")
 
-# --- Load dataset ---
-df = pd.read_csv("imdb_top_1000.csv")
-df.columns = df.columns.str.strip()
+# === Open hero container ===
+st.markdown('<div class="hero-container">', unsafe_allow_html=True)
 
-# --- Main container ---
-st.markdown('<div class="main-container">', unsafe_allow_html=True)
-
+# === Hero section content ===
 st.title("🎬 IMDB Top 1000 Movie Finder")
-st.markdown("""
-Search for your favorite movie, explore its details, discover related films, and see insightful visuals — now styled to match a true cinematic mood!
-""")
+st.markdown("Search for your favorite movie, explore its details, discover related films, and see insightful visuals — now styled to match a true cinematic mood!")
 
-# --- Movie input ---
 st.header("🔍 Search for a Movie")
 movie_name = st.text_input("Type a movie name and press Enter:")
+
+# === Close hero container ===
+st.markdown('</div>', unsafe_allow_html=True)
+
+
 
 if movie_name:
     choices = df['Series_Title'].tolist()
