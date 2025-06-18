@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 import base64
 from fpdf import FPDF
 
-# --- Custom CSS with cinematic font, smooth fade-in & new background ---
+# --- Custom CSS for perfect background and visible related movies table ---
 def set_custom_style(image_file):
     with open(image_file, "rb") as f:
         img = f.read()
@@ -25,12 +25,12 @@ def set_custom_style(image_file):
     }}
 
     .main-container {{
-        background: rgba(0, 0, 0, 0.75);
+        background: rgba(20, 20, 20, 0.95);  /* Solid dark for clear text */
         padding: 2rem;
         border-radius: 12px;
         margin-top: 2rem;
         font-weight: bold;
-        animation: fadeIn 2s ease-in-out;
+        animation: fadeIn 1.5s ease-in-out;
     }}
 
     @keyframes fadeIn {{
@@ -56,9 +56,9 @@ def set_custom_style(image_file):
         border: none;
     }}
 
-    .stTable {{
-        background: rgba(255, 255, 255, 0.95);
-        color: black;
+    .stDataFrame, .stTable {{
+        background: rgba(30, 30, 30, 0.9) !important;
+        color: #FFD700 !important;
         font-weight: bold;
         border-radius: 8px;
     }}
@@ -66,19 +66,20 @@ def set_custom_style(image_file):
     """
     st.markdown(custom_css, unsafe_allow_html=True)
 
-# Apply style with new cinematic font and fade-in
+
+# Apply the new style
 set_custom_style("backk.jpg")
 
 # --- Load dataset ---
 df = pd.read_csv("imdb_top_1000.csv")
 df.columns = df.columns.str.strip()
 
-# --- Main container with fade-in ---
+# --- Main container ---
 st.markdown('<div class="main-container">', unsafe_allow_html=True)
 
 st.title("🎬 IMDB Top 1000 Movie Finder")
 st.markdown("""
-Search for your favorite movies, get detailed highlights, explore related films, and analyze rating vs gross — all with a cinematic experience.
+Search for your favorite movie, explore its details, discover related films, and see insightful visuals — now styled to match a true cinematic mood!
 """)
 
 # --- Movie input ---
