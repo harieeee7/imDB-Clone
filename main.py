@@ -25,13 +25,16 @@ def set_custom_style(image_file):
     }}
 
     .main-container {{
-        background: rgba(20, 20, 20, 0.95);  /* Solid dark for clear text */
+        background: white;  /* Solid white background */
         padding: 2rem;
         border-radius: 12px;
         margin-top: 2rem;
         font-weight: bold;
+        color: black;  /* Ensure text is black on white background */
         animation: fadeIn 1.5s ease-in-out;
-    }}
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2); /* Soft shadow for depth */
+}}
+
 
     @keyframes fadeIn {{
         0% {{ opacity: 0; }}
