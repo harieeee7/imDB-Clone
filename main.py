@@ -65,7 +65,7 @@ def set_custom_style(image_file):
     </style>
     """
     st.markdown(custom_css, unsafe_allow_html=True)
-
+# --- Streamlit app setup ---
 
 # Apply the new style
 set_custom_style("backk.jpg")
