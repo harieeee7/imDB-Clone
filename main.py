@@ -3,77 +3,93 @@ import pandas as pd
 from fuzzywuzzy import process
 import matplotlib.pyplot as plt
 import base64
+from fpdf import FPDF
 
-# --- Custom CSS for beautiful background and semi-transparent containers ---
-def set_custom_styles(image_file):
+# --- Custom CSS with cinematic font, smooth fade-in & new background ---
+def set_custom_style(image_file):
     with open(image_file, "rb") as f:
-        data = f.read()
-    b64 = base64.b64encode(data).decode()
+        img = f.read()
+    b64 = base64.b64encode(img).decode()
 
     custom_css = f"""
     <style>
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&display=swap');
+
     .stApp {{
-        background-image: url("data:image/avif;base64,{b64}");
+        background-image: url("data:image/jpg;base64,{b64}");
         background-size: cover;
         background-position: center;
         background-repeat: no-repeat;
+        font-family: 'Playfair Display', serif;
         color: white;
     }}
 
     .main-container {{
-        background-color: rgba(0, 0, 0, 0.6);
+        background: rgba(0, 0, 0, 0.75);
         padding: 2rem;
-        border-radius: 10px;
+        border-radius: 12px;
+        margin-top: 2rem;
+        font-weight: bold;
+        animation: fadeIn 2s ease-in-out;
     }}
 
-    h1, h2, h3, h4, h5, h6 {{
+    @keyframes fadeIn {{
+        0% {{ opacity: 0; }}
+        100% {{ opacity: 1; }}
+    }}
+
+    h1, h2, h3 {{
         color: #FFD700;
+        font-weight: bold;
     }}
 
-    .stTextInput > div > div > input {{
-        background-color: rgba(255, 255, 255, 0.8);
+    .stTextInput input {{
+        background: rgba(255, 255, 255, 0.95);
         color: black;
+        font-weight: bold;
     }}
 
     .stButton button {{
         background-color: #FFD700;
         color: black;
+        font-weight: bold;
+        border: none;
     }}
 
     .stTable {{
-        background-color: rgba(255, 255, 255, 0.9);
+        background: rgba(255, 255, 255, 0.95);
         color: black;
+        font-weight: bold;
+        border-radius: 8px;
     }}
     </style>
     """
     st.markdown(custom_css, unsafe_allow_html=True)
 
-set_custom_styles("back.avif")
+# Apply style with new cinematic font and fade-in
+set_custom_style("backk.jpg")
 
-# --- Load data ---
+# --- Load dataset ---
 df = pd.read_csv("imdb_top_1000.csv")
 df.columns = df.columns.str.strip()
 
-# --- Main container for content ---
+# --- Main container with fade-in ---
 st.markdown('<div class="main-container">', unsafe_allow_html=True)
 
 st.title("🎬 IMDB Top 1000 Movie Finder")
-
 st.markdown("""
-Welcome to your stylish IMDB Explorer!  
-Search for any movie, view full details with a beautiful poster, discover related films, and visualize rating vs gross — all on a clean, modern layout.
+Search for your favorite movies, get detailed highlights, explore related films, and analyze rating vs gross — all with a cinematic experience.
 """)
 
-# --- Search box ---
+# --- Movie input ---
 st.header("🔍 Search for a Movie")
 movie_name = st.text_input("Type a movie name and press Enter:")
 
 if movie_name:
-    # Fuzzy match
     choices = df['Series_Title'].tolist()
     best_match, score = process.extractOne(movie_name, choices)
 
-    st.success(f"✅ **Best match:** `{best_match}` (Confidence: {score}%)")
+    st.success(f"✅ Best match: `{best_match}` (Confidence: {score}%)")
 
     movie = df[df['Series_Title'] == best_match]
 
@@ -121,34 +137,30 @@ if movie_name:
             ax.grid(True)
             st.pyplot(fig)
 
-        # Download
-        details = f"""=== Movie Details ===
-{movie.to_string(index=False)}
+        # --- PDF download ---
+        pdf = FPDF()
+        pdf.add_page()
+        pdf.set_font("Arial", size=12)
+        pdf.multi_cell(0, 10, f"Movie Details\n\nTitle: {title}\nIMDB Rating: {rating}\nDirector: {director}\nStars: {', '.join(stars)}\n\nOverview:\n{overview}\n\nRelated Movies:\n")
 
-=== Key Highlights ===
-Title: {title}
-IMDB Rating: {rating}
-Director: {director}
-Stars: {', '.join(stars)}
-Overview: {overview}
-
-=== Related Movies ===
-"""
         if not related.empty:
             for i, row in related.head(5).iterrows():
-                details += f"- {row['Series_Title']} ({row['Released_Year']})\n"
+                pdf.multi_cell(0, 10, f"- {row['Series_Title']} ({row['Released_Year']})")
         else:
-            details += "No related movies found.\n"
+            pdf.multi_cell(0, 10, "No related movies found.")
 
-        st.download_button(
-            "📥 Download Movie Details",
-            data=details,
-            file_name="movie_details.txt",
-            mime="text/plain"
-        )
+        pdf_file = f"{title.replace(' ', '_')}_details.pdf"
+        pdf.output(pdf_file)
+
+        with open(pdf_file, "rb") as f:
+            st.download_button(
+                label="📥 Download Movie Details (PDF)",
+                data=f,
+                file_name=pdf_file,
+                mime="application/pdf"
+            )
 
     else:
         st.error("Movie not found!")
 
-# Close main container
 st.markdown('</div>', unsafe_allow_html=True)
