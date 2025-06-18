@@ -5,6 +5,9 @@ import matplotlib.pyplot as plt
 import base64
 from fpdf import FPDF
 
+# --- Load your CSV ---
+df = pd.read_csv("imdb_top_1000.csv")
+
 # --- Custom CSS for perfect background and visible related movies table ---
 def set_custom_style(image_file):
     with open(image_file, "rb") as f:
@@ -24,17 +27,18 @@ def set_custom_style(image_file):
         color: white;
     }}
 
-    .main-container {{
-        background: white;  /* Solid white background */
+
+
+    .hero-container {{
+        background: white;
         padding: 2rem;
         border-radius: 12px;
-        margin-top: 2rem;
-        font-weight: bold;
-        color: black;  /* Ensure text is black on white background */
+        margin: 2rem auto;
+        max-width: 900px;
+        color: black;
+        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
         animation: fadeIn 1.5s ease-in-out;
-        box-shadow: 0 4px 20px rgba(0,0,0,0.2); /* Soft shadow for depth */
-}}
-
+    }}
 
     @keyframes fadeIn {{
         0% {{ opacity: 0; }}
@@ -65,26 +69,14 @@ def set_custom_style(image_file):
         font-weight: bold;
         border-radius: 8px;
     }}
-    .hero-container {{
-        background: white;  /* solid white for the intro area only */
-        padding: 2rem;
-        border-radius: 12px;
-        margin: 2rem auto;
-        max-width: 900px;
-        color: black;  /* text inside is black */
-        box-shadow: 0 4px 20px rgba(0,0,0,0.2);
-        animation: fadeIn 1.5s ease-in-out;
-}}
-
     </style>
     """
     st.markdown(custom_css, unsafe_allow_html=True)
-# --- Streamlit app setup ---
 
-# === Apply styles ===
-set_custom_style("YOUR_IMAGE.jpg")
+# --- Apply styles ---
+set_custom_style("backk.jpg")
 
-# === Open hero container ===
+# --- Open hero container ---
 st.markdown('<div class="hero-container">', unsafe_allow_html=True)
 
 # === Hero section content ===
@@ -94,11 +86,10 @@ st.markdown("Search for your favorite movie, explore its details, discover relat
 st.header("🔍 Search for a Movie")
 movie_name = st.text_input("Type a movie name and press Enter:")
 
-# === Close hero container ===
+# --- Close hero container ---
 st.markdown('</div>', unsafe_allow_html=True)
 
-
-
+# --- Movie search & display ---
 if movie_name:
     choices = df['Series_Title'].tolist()
     best_match, score = process.extractOne(movie_name, choices)
@@ -176,5 +167,3 @@ if movie_name:
 
     else:
         st.error("Movie not found!")
-
-st.markdown('</div>', unsafe_allow_html=True)
